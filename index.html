@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Aze-Eng Crossword</title>
+</head>
+<body>
+  <h2>Yüklənir...</h2>
+  <script>
+    const SUPABASE_URL = "https://mycqwhxzneitjvceofol.supabase.co";
+    const SUPABASE_KEY ="sb_publishable_8e12A5bLPB5evp--_IhtNA_Ew9UZzlc";
+
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get("t");
+
+    if (!token) {
+      document.body.innerHTML = "<h2>Keçərsiz link.</h2>";
+    } else {
+      fetch(`${SUPABASE_URL}/rest/v1/share_tokens?token=eq.${token}&used=eq.false`, {
+        headers: {
+          "apikey": SUPABASE_KEY,
+          "Authorization": "Bearer " + SUPABASE_KEY
+        }
+      })
+      .then(r => r.json())
+      .then(data => {
+        if (!data || data.length === 0) {
+          document.body.innerHTML = "<h2>Bu link artıq istifadə edilib və ya keçərsizdir.</h2>";
+        } else {
+          fetch(`${SUPABASE_URL}/rest/v1/share_tokens?token=eq.${token}`, {
+            method: "PATCH",
+            headers: {
+              "apikey": SUPABASE_KEY,
+              "Authorization": "Bearer " + SUPABASE_KEY,
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ used: true })
+          })
+          .then(() => {
+            document.body.innerHTML = "<h2>Təbriklər! Oyunu yüklə: [Play Store linki]</h2>";
+          });
+        }
+      });
+    }
+  </script>
+</body>
+</html>
